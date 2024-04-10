@@ -15,7 +15,7 @@ import {
 
 export default function Sidebar() {
   return (
-    <div className='hidden sm:flex flex-col p-2 xl:items-start fixed h-full'>
+    <div className='hidden sm:flex flex-col p-2 xl:items-start fixed h-full xl:ml-24'>
       {/** Twitter logo */}
       <div className='hoverEffect hover:bg-blue-100 w-14 h-14 flex items-center justify-center p-3'>
         <Image
