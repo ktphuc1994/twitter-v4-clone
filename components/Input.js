@@ -1,12 +1,19 @@
 import { PhotoIcon, FaceSmileIcon } from '@heroicons/react/24/outline';
 
+import { useSession, signOut } from 'next-auth/react';
+
 export default function Input() {
+  const { data: session, status } = useSession();
+
+  if (status !== 'authenticated') return null;
+
   return (
     <div className='flex border-b border-gray-200 p-3 space-x-3'>
       <img
-        src='https://media.licdn.com/dms/image/C5603AQEeDVn0pnKpDQ/profile-displayphoto-shrink_800_800/0/1623814405277?e=2147483647&v=beta&t=6KsthbGW6_lqQg_GVW7rjiaeHk9rs4-uJx1eN_4OYtg'
+        src={session.user.image}
         alt='user-img'
         className='h-11 w-11 rounded-full cursor-pointer hover:brightness-95'
+        onClick={signOut}
       />
       <div className='w-full divide-y divide-gray-200'>
         <div>
