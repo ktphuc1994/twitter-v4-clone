@@ -98,7 +98,7 @@ export default function Input() {
         {selectedFile && (
           <div className='relative'>
             <XMarkIcon
-              className='w-7 h-7 absolute cursor-pointer shadow-md shadow-white rounded-full'
+              className='m-1 border border-white w-7 h-7 absolute cursor-pointer rounded-full'
               onClick={removePostImage}
             />
             <img
