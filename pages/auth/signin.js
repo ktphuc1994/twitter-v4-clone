@@ -10,7 +10,7 @@ export default function SignInPage({ providers }) {
       />
       <div className=''>
         {Object.values(providers).map((provider) => (
-          <div className='flex flex-col items-center'>
+          <div className='flex flex-col items-center' key={provider.id}>
             <img
               className='w-36 object-cover'
               src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Logo_of_Twitter.svg/512px-Logo_of_Twitter.svg.png'
