@@ -10,6 +10,7 @@ export default function App({
     <SessionProvider session={session}>
       <RecoilRoot>
         <Component {...pageProps} />
+        <div id='react-modal-root'></div>
       </RecoilRoot>
     </SessionProvider>
   );

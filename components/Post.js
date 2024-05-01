@@ -20,12 +20,13 @@ import { signIn, useSession } from 'next-auth/react';
 import Moment from 'react-moment';
 import { deleteObject, ref } from 'firebase/storage';
 import { useRecoilState } from 'recoil';
-import { modalState } from '@/atom/modalAtom';
+import { modalState, postIdState } from '@/atom/modalAtom';
 
 export default function Post({ post }) {
   const { data: session } = useSession();
   const [likes, setLikes] = useState([]);
   const [open, setOpen] = useRecoilState(modalState);
+  const [postId, setPostId] = useRecoilState(postIdState);
 
   const hasLiked = useMemo(() => {
     const likeIndex = likes.findIndex((like) => like.id === session?.user.uid);
@@ -66,6 +67,21 @@ export default function Post({ post }) {
         deleteObject(ref(storage, `posts/${post.id}/image`));
       }
     }
+  }
+
+  function handleCommentIconClick() {
+    if (!session) {
+      signIn();
+      return;
+    }
+
+    setOpen(!open);
+    if (!open) {
+      setPostId(post.id);
+      return;
+    }
+
+    setPostId('');
   }
 
   return (
@@ -110,9 +126,7 @@ export default function Post({ post }) {
         <div className='flex justify-between text-gray-500 p-2'>
           <ChatBubbleOvalLeftEllipsisIcon
             className='h-9 w-9 hoverEffect p-2 hover:text-sky-500 hover:bg-sky-100'
-            onClick={() => {
-              setOpen(!open);
-            }}
+            onClick={handleCommentIconClick}
           />
           {session?.user.uid === post?.data().id && (
             <TrashIcon
