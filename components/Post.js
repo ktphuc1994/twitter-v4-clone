@@ -25,6 +25,7 @@ import { modalState, postIdState } from '@/atom/modalAtom';
 export default function Post({ post }) {
   const { data: session } = useSession();
   const [likes, setLikes] = useState([]);
+  const [comments, setComments] = useState([]);
   const [open, setOpen] = useRecoilState(modalState);
   const [postId, setPostId] = useRecoilState(postIdState);
 
@@ -34,14 +35,24 @@ export default function Post({ post }) {
   }, [likes]);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(
+    const unsubscribeLikes = onSnapshot(
       collection(db, 'posts', post.id, 'likes'),
       (snapshot) => {
         setLikes(snapshot.docs);
       }
     );
 
-    return unsubscribe;
+    const unsubscribeComments = onSnapshot(
+      collection(db, 'posts', post.id, 'comments'),
+      (snapshot) => {
+        setComments(snapshot.docs);
+      }
+    );
+
+    return () => {
+      unsubscribeLikes();
+      unsubscribeComments();
+    };
   }, []);
 
   async function likePost() {
@@ -94,7 +105,7 @@ export default function Post({ post }) {
       />
 
       {/** right side */}
-      <div>
+      <div className='flex-1'>
         {/** Header */}
         <div className='flex items-center justify-between'>
           {/** post user info */}
@@ -124,10 +135,15 @@ export default function Post({ post }) {
 
         {/** icons */}
         <div className='flex justify-between text-gray-500 p-2'>
-          <ChatBubbleOvalLeftEllipsisIcon
-            className='h-9 w-9 hoverEffect p-2 hover:text-sky-500 hover:bg-sky-100'
-            onClick={handleCommentIconClick}
-          />
+          <div className='flex items-center select-none'>
+            <ChatBubbleOvalLeftEllipsisIcon
+              className='h-9 w-9 hoverEffect p-2 hover:text-sky-500 hover:bg-sky-100'
+              onClick={handleCommentIconClick}
+            />
+            {comments.length > 0 ? (
+              <span className='text-sm'>{comments.length}</span>
+            ) : null}
+          </div>
           {session?.user.uid === post?.data().id && (
             <TrashIcon
               className='h-9 w-9 hoverEffect p-2 hover:text-red-600 hover:bg-red-100'

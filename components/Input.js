@@ -64,7 +64,6 @@ export default function Input() {
 
     reader.onload = (readerEvent) => {
       setSelectedFile(readerEvent.target.result);
-      console.log('read');
     };
   };
 

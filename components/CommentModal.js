@@ -8,13 +8,21 @@ import {
   FaceSmileIcon,
 } from '@heroicons/react/24/outline';
 import { db } from '@/firebase';
-import { doc, onSnapshot } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  onSnapshot,
+  serverTimestamp,
+} from 'firebase/firestore';
 import Moment from 'react-moment';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 Modal.setAppElement('#react-modal-root');
 
 export default function CommentModal() {
+  const router = useRouter();
   const { data: session } = useSession();
   const [post, setPost] = useState(null);
   const [input, setInput] = useState('');
@@ -33,7 +41,19 @@ export default function CommentModal() {
     setOpen(false);
   }
 
-  function sendComment() {}
+  async function sendComment() {
+    await addDoc(collection(db, 'posts', postId, 'comments'), {
+      comment: input,
+      name: session.user.name,
+      username: session.user.username,
+      userImg: session.user.image,
+      timestamp: serverTimestamp(),
+    });
+
+    setOpen(false);
+    setInput('');
+    router.push(`/posts/${postId}`);
+  }
 
   return (
     <Modal
