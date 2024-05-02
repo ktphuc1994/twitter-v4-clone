@@ -1,14 +1,43 @@
+import Comment from '@/components/Comment';
 import CommentModal from '@/components/CommentModal';
 import Post from '@/components/Post';
 import Sidebar from '@/components/Sidebar';
 import Widgets from '@/components/Widgets';
 import { db } from '@/firebase';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import { doc, getDoc } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  onSnapshot,
+  orderBy,
+  query,
+} from 'firebase/firestore';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
-export default function PostDetail({ post, newsResults, randomUserResults }) {
+export default function PostDetail({
+  post,
+  initComments,
+  newsResults,
+  randomUserResults,
+}) {
+  const [comments, setComments] = useState(initComments);
+
+  useEffect(() => {
+    onSnapshot(
+      query(
+        collection(db, 'posts', post.postId, 'comments'),
+        orderBy('timestamp', 'desc')
+      ),
+      (snapshot) => {
+        setComments(snapshot.docs);
+      }
+    );
+  }, []);
+
   return (
     <div>
       <Head>
@@ -34,6 +63,12 @@ export default function PostDetail({ post, newsResults, randomUserResults }) {
             </h2>
           </div>
           <Post postObject={post} />
+          <div>
+            {comments.map((commentInfo) => {
+              const data = _getCommentInfo(commentInfo);
+              return <Comment key={data.commentId} commentInfo={data} />;
+            })}
+          </div>
         </div>
 
         {/** Widgets */}
@@ -58,17 +93,27 @@ export async function getServerSideProps(context) {
     };
   }
 
-  const [newsResults, randomUserResults] = await Promise.allSettled([
-    // news
-    fetch(
-      'https://saurav.tech/NewsAPI/top-headlines/category/business/us.json'
-    ).then((res) => res.json()),
+  const commentCollectionRef = query(
+    collection(db, 'posts', context.params.id, 'comments'),
+    orderBy('timestamp', 'desc')
+  );
+  const commentCollection = getDocs(commentCollectionRef);
 
-    // random user
-    fetch('https://randomuser.me/api/?results=30&inc=name,login,picture').then(
-      (res) => res.json()
-    ),
-  ]);
+  const [newsResults, randomUserResults, commentsSnap] =
+    await Promise.allSettled([
+      // news
+      fetch(
+        'https://saurav.tech/NewsAPI/top-headlines/category/business/us.json'
+      ).then((res) => res.json()),
+
+      // random user
+      fetch(
+        'https://randomuser.me/api/?results=30&inc=name,login,picture'
+      ).then((res) => res.json()),
+      commentCollection,
+    ]);
+
+  const initComments = commentsSnap.value.docs.map(_getCommentInfo);
 
   const post = postDocSnap.data();
   post.postId = context.params.id;
@@ -77,8 +122,20 @@ export async function getServerSideProps(context) {
   return {
     props: {
       post,
+      initComments,
       newsResults: newsResults.value,
       randomUserResults: randomUserResults.value,
     },
+  };
+}
+
+function _getCommentInfo(commentInfo) {
+  const data = commentInfo.data?.();
+  if (!data) return commentInfo;
+
+  return {
+    ...data,
+    timestamp: data.timestamp?.toDate().toISOString(),
+    commentId: commentInfo.id,
   };
 }

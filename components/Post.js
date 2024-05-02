@@ -114,12 +114,7 @@ export default function Post({ post, postObject }) {
   }
 
   return (
-    <div
-      className='flex p-3 cursor-pointer border-b border-gray-200'
-      // onClick={() => {
-      //   router.push(`/posts/${postInfo.postId}`);
-      // }}
-    >
+    <div className='flex p-3 cursor-pointer border-b border-gray-200'>
       {/** user image */}
       <img
         className='h-11 w-11 rounded-full mr-4'
@@ -154,7 +149,16 @@ export default function Post({ post, postObject }) {
         </p>
 
         {/** post image */}
-        <img className='rounded-2xl mr-2' src={postInfo.image} alt='' />
+        <img
+          className='rounded-2xl mr-2'
+          src={postInfo.image}
+          alt={postInfo.text}
+          onClick={() => {
+            const toPath = `/posts/${postInfo.postId}`;
+            if (toPath === router.asPath) return;
+            router.push(toPath);
+          }}
+        />
 
         {/** icons */}
         <div className='flex justify-between text-gray-500 p-2'>

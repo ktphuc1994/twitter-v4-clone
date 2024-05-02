@@ -52,7 +52,10 @@ export default function CommentModal() {
 
     setOpen(false);
     setInput('');
-    router.push(`/posts/${postId}`);
+    const toPath = `/posts/${postId}`;
+    if (router.asPath !== toPath) {
+      router.push(toPath);
+    }
   }
 
   return (
