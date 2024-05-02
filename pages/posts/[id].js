@@ -14,6 +14,7 @@ import {
   orderBy,
   query,
 } from 'firebase/firestore';
+import { AnimatePresence, motion } from 'framer-motion';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -64,16 +65,22 @@ export default function PostDetail({
           </div>
           <Post postObject={post} />
           <div>
-            {comments.map((commentInfo) => {
-              const data = _getCommentInfo(commentInfo);
-              return (
-                <Comment
-                  key={data.commentId}
-                  commentInfo={data}
-                  originalPostId={post.postId}
-                />
-              );
-            })}
+            <AnimatePresence>
+              {comments.map((commentInfo) => {
+                const data = _getCommentInfo(commentInfo);
+                return (
+                  <motion.div
+                    key={data.commentId}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 1 }}
+                  >
+                    <Comment commentInfo={data} originalPostId={post.postId} />
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
           </div>
         </div>
 
