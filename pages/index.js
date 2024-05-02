@@ -13,7 +13,7 @@ export default function Home({ newsResults, randomUserResults }) {
           name='description'
           content='An Twitter Clone App by Robert Khuc, under guidance of Dr. Sahand Ghavidel'
         />
-        <link ref='icon' href='/favicon.ico' />
+        <link rel='icon' href='/favicon.ico' />
       </Head>
 
       <main className='flex min-h-screen mx-auto'>

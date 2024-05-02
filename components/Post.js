@@ -113,6 +113,12 @@ export default function Post({ post, postObject }) {
     setPostId('');
   }
 
+  function handlePostNavigation() {
+    const toPath = `/posts/${postInfo.postId}`;
+    if (toPath === router.asPath) return;
+    router.push(toPath);
+  }
+
   return (
     <div className='flex p-3 cursor-pointer border-b border-gray-200'>
       {/** user image */}
@@ -144,7 +150,10 @@ export default function Post({ post, postObject }) {
         </div>
 
         {/** post text */}
-        <p className='text-gray-800 text-[15px] sm:text-[16px] mb-2'>
+        <p
+          className='text-gray-800 text-[15px] sm:text-[16px] mb-2'
+          onClick={handlePostNavigation}
+        >
           {postInfo.text}
         </p>
 
@@ -153,11 +162,7 @@ export default function Post({ post, postObject }) {
           className='rounded-2xl mr-2'
           src={postInfo.image}
           alt={postInfo.text}
-          onClick={() => {
-            const toPath = `/posts/${postInfo.postId}`;
-            if (toPath === router.asPath) return;
-            router.push(toPath);
-          }}
+          onClick={handlePostNavigation}
         />
 
         {/** icons */}

@@ -43,7 +43,7 @@ export default function PostDetail({
       <Head>
         <title>Post Page</title>
         <meta name='description' content={post.text} />
-        <link ref='icon' href='/favicon.ico' />
+        <link rel='icon' href='/favicon.ico' />
       </Head>
 
       <main className='flex min-h-screen mx-auto'>
@@ -66,7 +66,13 @@ export default function PostDetail({
           <div>
             {comments.map((commentInfo) => {
               const data = _getCommentInfo(commentInfo);
-              return <Comment key={data.commentId} commentInfo={data} />;
+              return (
+                <Comment
+                  key={data.commentId}
+                  commentInfo={data}
+                  originalPostId={post.postId}
+                />
+              );
             })}
           </div>
         </div>
